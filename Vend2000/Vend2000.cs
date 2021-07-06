@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 
 namespace Vend2000
 {
     public class Vend2000
     {
+
+
         private readonly ICoinValidator coinValidator;
         private readonly IGumDispenser gumDispenser;
         private readonly ICoinStorage coinStorage;
@@ -39,13 +40,13 @@ namespace Vend2000
                 return;
             }
 
-            Log("=== Welcome to the Vend2000 gum dispenser ===");
+            Log("=== Welcome to the Vend2000 Gum Dispenser ===");
 
             while (true)
             {
                 LineFeed();
                 Separator();
-                Log("Please enter one GOLD coin:");
+                Log("Please insert one BRONZE coin:");
                 Separator();
 
                 Log("1. GOLD   coin");
@@ -59,51 +60,54 @@ namespace Vend2000
                     break;
                 }
 
-                if (input == "/")
+                if (input.ToLower() is "m")
                 {
                     EnterMaintenanceMode();
                     ClearScreen();
                     continue;
                 }
 
-                var coin = GenerateCoin(input);
+                var coin = GenerateCoinFromInput(input);
                 if (coin is null)
                 {
                     continue;
                 }
 
-                var coinValidatorResult = coinValidator.Validate(coin, CoinType.Gold);
-                if (coinValidatorResult.IsFail)
+                var coinType = coinValidator.DetermineCoinType(coin);
+                var coinIsInvalid = coinType != CoinType.Bronze;
+                if (coinIsInvalid)
                 {
-                    Log(coinValidatorResult.Message);
+                    LineFeed();
+                    Log("Invalid coin");
                     ReturnCoin();
                     continue;
                 }
 
-                var gumDispenserResult = gumDispenser.Dispense();
-                if (gumDispenserResult.IsFail)
+                var gumPacket = gumDispenser.Dispense();
+                if (gumPacket == null)
                 {
-                    Log(gumDispenserResult.Message);
+                    LineFeed();
+                    Log("We apologize, we are currently out of Gum :(");
                     ReturnCoin();
                     continue;
                 }
 
                 coinStorage.Add(coin);
-
-                var gumPacket = gumDispenserResult.Data;
                 DispenseGum(gumPacket);
-
-                Separator();
             }
         }
 
         private void DispenseGum(GumPacket gumPacket)
         {
+            LineFeed();
+            Log("Clunk...");
             Log("Gum packet dispensed");
+            Log("Enjoy!");
         }
 
         private void ReturnCoin()
         {
+            LineFeed();
             Log("Coin returned");
         }
 
@@ -150,7 +154,7 @@ namespace Vend2000
 
                 switch (input)
                 {
-                    case 1: gumDispenser.Load(new GumPacket());
+                    case 1: gumDispenser.Add(new GumPacket());
                         break; 
                     case 2: gumDispenser.Dispense();
                         break; 
@@ -200,7 +204,7 @@ namespace Vend2000
             return new string(pass.Reverse().ToArray());
         }
 
-    private ICoin GenerateCoin(string input)
+    private ICoin GenerateCoinFromInput(string input)
     {
         var key = ReadNumberedInput(input);
 
@@ -252,7 +256,7 @@ namespace Vend2000
                 message = $"*** {message} ***";
             }
 
-            Console.WriteLine(message);
+            Console.WriteLine($"  {message}");
         }
 
         private void LineFeed()

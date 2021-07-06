@@ -5,7 +5,7 @@ namespace Vend2000
     {
         int Capacity { get; }
         int Quantity { get; }
-        IResult Load(GumPacket gumPacket);
-        IResult<GumPacket> Dispense();
+        void Add(GumPacket gumPacket);
+        GumPacket Dispense();
     }
 }

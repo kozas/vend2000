@@ -2,7 +2,7 @@
 {
     public class GoldCoin : ICoin
     {
-        public string Name => "Gold";
-        public CoinType CoinType => CoinType.Gold;
+        public int Weight => 11;
+        public int Diameter => 30;
     }
 }

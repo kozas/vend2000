@@ -2,6 +2,6 @@
 {
     public interface ICoinValidator
     {
-        IResult<bool> Validate(ICoin coin, CoinType coinType);
+        CoinType DetermineCoinType(ICoin coin);
     }
 }

@@ -2,7 +2,7 @@
 {
     public interface ICoin
     {
-        public string Name { get; }
-        public CoinType CoinType { get; }
+        public int Weight { get; }
+        public int Diameter { get; }
     }
 }
