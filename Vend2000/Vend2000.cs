@@ -6,13 +6,11 @@ namespace Vend2000
 {
     public class Vend2000
     {
-
-
         private readonly ICoinValidator coinValidator;
         private readonly IGumDispenser gumDispenser;
         private readonly ICoinStorage coinStorage;
 
-        string logo = @"
+        private readonly string logo = @"
    _    __               _____   ____  ____  ____ 
   | |  / /__  ____  ____/ /__ \ / __ \/ __ \/ __ \
   | | / / _ \/ __ \/ __  /__/ // / / / / / / / / /
@@ -27,11 +25,12 @@ namespace Vend2000
             this.coinStorage = coinStorage;
         }
 
-        public void Run() {
-
+        public void Run()
+        {
             Log(logo);
 
-            if (ModulesAreMissing())
+            var moduleIsMissing = CheckForMissingModules();
+            if (moduleIsMissing)
             {
                 LineFeed();
                 Separator();
@@ -55,7 +54,7 @@ namespace Vend2000
 
                 var input = ReadKey();
 
-                if (input == "\u001b") 
+                if (input == "\u001b")
                 {
                     break;
                 }
@@ -137,7 +136,7 @@ namespace Vend2000
                 Log("Password incorrect");
                 LineFeed();
             }
-            
+
             while (true)
             {
                 Log("1. Load Gum packet");
@@ -154,32 +153,34 @@ namespace Vend2000
 
                 switch (input)
                 {
-                    case 1: gumDispenser.Add(new GumPacket());
-                        break; 
-                    case 2: gumDispenser.Dispense();
-                        break; 
-                    case 3: coinStorage.Empty();
-                        break; 
+                    case 1:
+                        gumDispenser.Add(new GumPacket());
+                        break;
+                    case 2:
+                        gumDispenser.Dispense();
+                        break;
+                    case 3:
+                        coinStorage.Empty();
+                        break;
                 }
             }
         }
-        
-        
+
         public static string ReadPassword(char mask)
         {
             const int ENTER = 13, BACKSP = 8, CTRLBACKSP = 127;
-            int[] FILTERED = { 0, 27, 9, 10 /*, 32 space, if you care */ }; // const
+            int[] FILTERED = {0, 27, 9, 10 /*, 32 space, if you care */}; // const
 
             var pass = new Stack<char>();
-            char chr = (char)0;
+            var chr = (char) 0;
 
-            while ((chr = System.Console.ReadKey(true).KeyChar) != ENTER)
+            while ((chr = Console.ReadKey(true).KeyChar) != ENTER)
             {
                 if (chr == BACKSP)
                 {
                     if (pass.Count > 0)
                     {
-                        System.Console.Write("\b \b");
+                        Console.Write("\b \b");
                         pass.Pop();
                     }
                 }
@@ -187,26 +188,28 @@ namespace Vend2000
                 {
                     while (pass.Count > 0)
                     {
-                        System.Console.Write("\b \b");
+                        Console.Write("\b \b");
                         pass.Pop();
                     }
                 }
-                else if (FILTERED.Count(x => chr == x) > 0) { }
+                else if (FILTERED.Count(x => chr == x) > 0)
+                {
+                }
                 else
                 {
-                    pass.Push((char)chr);
-                    System.Console.Write(mask);
+                    pass.Push(chr);
+                    Console.Write(mask);
                 }
             }
 
-            System.Console.WriteLine();
+            Console.WriteLine();
 
             return new string(pass.Reverse().ToArray());
         }
 
-    private ICoin GenerateCoinFromInput(string input)
-    {
-        var key = ReadNumberedInput(input);
+        private ICoin GenerateCoinFromInput(string input)
+        {
+            var key = ReadNumberedInput(input);
 
             switch (key)
             {
@@ -218,7 +221,7 @@ namespace Vend2000
             return null;
         }
 
-        private bool ModulesAreMissing()
+        private bool CheckForMissingModules()
         {
             if (coinValidator == null)
             {
@@ -285,7 +288,7 @@ namespace Vend2000
         {
             int.TryParse(input, out var key);
 
-            return (key < 11) ? key : key - 48;
+            return key < 11 ? key : key - 48;
         }
 
 
