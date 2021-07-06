@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Vend2000
 {
@@ -10,6 +11,8 @@ namespace Vend2000
         private readonly IGumDispenser gumDispenser;
         private readonly ICoinStorage coinStorage;
 
+        private string message = " ";
+
         private readonly string logo = @"
    _    __               _____   ____  ____  ____ 
   | |  / /__  ____  ____/ /__ \ / __ \/ __ \/ __ \
@@ -17,6 +20,8 @@ namespace Vend2000
   | |/ /  __/ / / / /_/ // __// /_/ / /_/ / /_/ / 
   |___/\___/_/ /_/\__,_//____/\____/\____/\____/  
           ";
+
+        private const string EscapeKeyCode = "\u001b";
 
         public Vend2000(ICoinValidator coinValidator, IGumDispenser gumDispenser, ICoinStorage coinStorage)
         {
@@ -27,22 +32,23 @@ namespace Vend2000
 
         public void Run()
         {
-            Log(logo);
-
-            var moduleIsMissing = CheckForMissingModules();
-            if (moduleIsMissing)
-            {
-                LineFeed();
-                Separator();
-                Log("Please install missing modules.");
-                Separator();
-                return;
-            }
-
-            Log("=== Welcome to the Vend2000 Gum Dispenser ===");
-
             while (true)
             {
+                ClearScreen();
+                Log(logo);
+
+                var moduleIsMissing = CheckForMissingModules();
+                if (moduleIsMissing)
+                {
+                    LineFeed();
+                    Separator();
+                    Log("Please install missing modules.");
+                    Separator();
+                    break;
+                }
+
+                Log("=== Welcome to the Vend2000 Gum Dispenser ===");
+
                 LineFeed();
                 Separator();
                 Log("Please insert one BRONZE coin:");
@@ -52,9 +58,11 @@ namespace Vend2000
                 Log("2. SILVER coin");
                 Log("3. BRONZE coin");
 
-                var input = ReadKey();
+                DisplayMessage();
 
-                if (input == "\u001b")
+                var input = ReadKey();
+                
+                if (input == EscapeKeyCode)
                 {
                     break;
                 }
@@ -69,6 +77,8 @@ namespace Vend2000
                 var coin = GenerateCoinFromInput(input);
                 if (coin is null)
                 {
+                    LineFeed();
+                    BufferMessage("Invalid selection");
                     continue;
                 }
 
@@ -77,7 +87,7 @@ namespace Vend2000
                 if (coinIsInvalid)
                 {
                     LineFeed();
-                    Log("Invalid coin");
+                    BufferMessage("Invalid coin");
                     ReturnCoin();
                     continue;
                 }
@@ -86,7 +96,7 @@ namespace Vend2000
                 if (gumPacket == null)
                 {
                     LineFeed();
-                    Log("We apologize, we are currently out of Gum :(");
+                    BufferMessage("We apologize, we are currently out of Gum :(");
                     ReturnCoin();
                     continue;
                 }
@@ -96,18 +106,30 @@ namespace Vend2000
             }
         }
 
-        private void DispenseGum(GumPacket gumPacket)
+        private void BufferMessage(string message)
+        {
+            this.message += $"{Environment.NewLine}  {message}";
+        }
+
+        private void DisplayMessage()
         {
             LineFeed();
-            Log("Clunk...");
-            Log("Gum packet dispensed");
-            Log("Enjoy!");
+            Log(message);
+            message = " ";
+        }
+
+        private async void DispenseGum(GumPacket gumPacket)
+        {
+            LineFeed();
+            BufferMessage("Clunk...");
+            BufferMessage("Gum packet dispensed");
+            BufferMessage("Enjoy!");
         }
 
         private void ReturnCoin()
         {
             LineFeed();
-            Log("Coin returned");
+            BufferMessage("Coin returned");
         }
 
         private void EnterMaintenanceMode()
@@ -127,9 +149,6 @@ namespace Vend2000
 
                 if (password?.Trim() == "123")
                 {
-                    Log("Password accepted");
-                    LineFeed();
-
                     break;
                 }
 
@@ -139,6 +158,16 @@ namespace Vend2000
 
             while (true)
             {
+                ClearScreen();
+                Heading("Maintenance Mode");
+                LineFeed();
+
+                Log($"Gum packets {gumDispenser.Quantity} of {gumDispenser.Capacity}");
+                Log($"Coin count {coinStorage.CoinCount}");
+                Separator();
+                LineFeed();
+
+                Log("Please choose an operation:");
                 Log("1. Load Gum packet");
                 Log("2. Dispense Gum packet");
                 Log("3. Empty coin storage");
@@ -146,7 +175,7 @@ namespace Vend2000
 
                 var input = ReadNumberedInput();
 
-                if (input == 4)
+                if (input is 4)
                 {
                     break;
                 }
@@ -246,10 +275,9 @@ namespace Vend2000
 
         private void Heading(string heading)
         {
-            Separator();
+            Separator('=');
             Log(heading?.ToUpper());
-            Separator();
-            LineFeed();
+            Separator('=');
         }
 
         private void Log(string message = "", bool important = false)
@@ -267,9 +295,9 @@ namespace Vend2000
             Console.WriteLine("");
         }
 
-        private void Separator()
+        private void Separator(char separator = '-')
         {
-            Console.WriteLine("-----------------------------------------------------------------------------------");
+            Console.WriteLine("".PadLeft(50,separator));
         }
 
         private void ClearScreen()
