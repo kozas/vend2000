@@ -7,5 +7,6 @@ namespace Vend2000
         List<ICoin> Empty();
         void Add(ICoin coin);
         int CoinCount { get; }
+        int Capacity { get; }
     }
 }

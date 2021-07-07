@@ -47,6 +47,9 @@ namespace Vend2000
                     break;
                 }
 
+                ClearScreen();
+                Log(logo);
+
                 Log("=== Welcome to the Vend2000 Gum Dispenser ===");
 
                 LineFeed();
@@ -252,23 +255,24 @@ namespace Vend2000
 
         private bool CheckForMissingModules()
         {
-            if (coinValidator == null)
-            {
-                Log("Coin Validator module is not installed", true);
-            }
-
-            if (gumDispenser == null)
-            {
-                Log("Gum Dispenser module is not installed ", true);
-            }
-
-            if (coinStorage == null)
-            {
-                Log("Coin Storage module is not installed  ", true);
-            }
-
             var modulesAreMissing = coinValidator == null || gumDispenser == null || coinStorage == null;
-            return modulesAreMissing;
+            if (!modulesAreMissing)
+            {
+                return false;
+            }
+            
+            Log($"Verifying Module Installation... ");
+            LineFeed();
+
+            var coinValidatorMessage = coinValidator is null ? "*** Not installed *** (Program.cs Line 11)" : "Installed";
+            var gumDispenserMessage = gumDispenser is null ? "*** Not installed *** (Program.cs Line 12)" : "Installed";
+            var coinStorageMessage = coinStorage is null ? "*** Not installed *** (Program.cs Line 13)" : "Installed";
+            
+            Log($"Coin Validator module : {coinValidatorMessage}");
+            Log($"Gum Dispenser module  : {gumDispenserMessage}");
+            Log($"Coin Storage module   : {coinStorageMessage}");
+
+            return true;
         }
 
         #region Helpers
