@@ -8,9 +8,9 @@ namespace Vend2000
         {
             Console.CursorVisible = false;
 
-            ICoinValidator coinValidator = new CoinValidator();
-            IGumDispenser gumDispenser = new GumDispenser10Unit();
-            ICoinStorage coinStorage = new CoinStorage();
+            ICoinValidator coinValidator = null;
+            IGumDispenser gumDispenser = null;
+            ICoinStorage coinStorage = null;
 
             var vend2000 = new Vend2000(coinValidator, gumDispenser, coinStorage);
             vend2000.Run();

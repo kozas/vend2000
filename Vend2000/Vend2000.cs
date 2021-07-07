@@ -28,7 +28,7 @@ namespace Vend2000
             this.coinValidator = coinValidator;
             this.gumDispenser = gumDispenser;
             this.coinStorage = coinStorage;
-        }
+        }   
 
         public void Run()
         {
@@ -93,7 +93,7 @@ namespace Vend2000
                 }
 
                 var gumPacket = gumDispenser.Dispense();
-                if (gumPacket == null)
+                if (gumPacket is null)
                 {
                     LineFeed();
                     BufferMessage("We apologize, we are currently out of Gum :(");
@@ -118,7 +118,7 @@ namespace Vend2000
             message = " ";
         }
 
-        private async void DispenseGum(GumPacket gumPacket)
+        private void DispenseGum(GumPacket gumPacket)
         {
             LineFeed();
             BufferMessage("Clunk...");
@@ -236,7 +236,7 @@ namespace Vend2000
             return new string(pass.Reverse().ToArray());
         }
 
-        private ICoin GenerateCoinFromInput(string input)
+        private ICoin? GenerateCoinFromInput(string input)
         {
             var key = ReadNumberedInput(input);
 
@@ -276,7 +276,7 @@ namespace Vend2000
         private void Heading(string heading)
         {
             Separator('=');
-            Log(heading?.ToUpper());
+            Log(heading?.ToUpper() ?? "");
             Separator('=');
         }
 

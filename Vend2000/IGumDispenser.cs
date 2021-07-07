@@ -6,6 +6,6 @@ namespace Vend2000
         int Capacity { get; }
         int Quantity { get; }
         void Add(GumPacket gumPacket);
-        GumPacket Dispense();
+        GumPacket? Dispense();
     }
 }
