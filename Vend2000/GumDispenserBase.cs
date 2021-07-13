@@ -8,7 +8,7 @@ namespace Vend2000
 {
     public abstract class GumDispenserBase : IGumDispenser
     {
-        private readonly List<GumPacket> gumPackets = new List<GumPacket>();
+        private readonly Stack<GumPacket> gumPackets = new Stack<GumPacket>();
 
         public int Capacity { get; }
         public int Quantity => gumPackets.Count();
@@ -25,7 +25,7 @@ namespace Vend2000
                 return;
             }
 
-            gumPackets.Add(gumPacket);
+            gumPackets.Push(gumPacket);
         }
 
         public GumPacket? Dispense()
@@ -35,9 +35,7 @@ namespace Vend2000
                 return null;
             }
 
-            var packetToDispense = gumPackets[0];
-            gumPackets.RemoveAt(0);
-
+            var packetToDispense = gumPackets.Pop();
             return packetToDispense;
         }
     }
