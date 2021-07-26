@@ -4,5 +4,6 @@
     {
         public int Weight => 10;
         public int Diameter => 30;
+        public int Value => 0;
     }
 }

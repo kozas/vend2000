@@ -46,6 +46,7 @@ namespace Vend2000.Models
             }
 
             var productToDispense = loadedProducts.Pop();
+
             return productToDispense;
         }
     }

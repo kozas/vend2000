@@ -12,11 +12,13 @@ namespace Vend2000.Models
     {
         public string Name { get; }
         public DispenserSize DispenserSize { get; }
+        public int Cost { get; }
 
-        protected ProductBase(string name, DispenserSize dispenserSize)
+        protected ProductBase(string name, DispenserSize dispenserSize, int cost)
         {
             Name = name;
             DispenserSize = dispenserSize;
+            Cost = cost;
         }
     }
 }

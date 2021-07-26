@@ -5,7 +5,7 @@ namespace Vend2000.Components
 {
     public class GumPacket : ProductBase
     {
-        public GumPacket() : base("Gum Packet", DispenserSize.Small)
+        public GumPacket() : base("Gum Packet", DispenserSize.Small, 65)
         {
         }
     }

@@ -5,7 +5,7 @@ namespace Vend2000.Components
 {
     public class ChipBag : ProductBase
     {
-        public ChipBag() : base("Bag of chips", DispenserSize.Large)
+        public ChipBag() : base("Bag of chips", DispenserSize.Large, 99)
         {
         }
     }

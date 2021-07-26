@@ -6,5 +6,7 @@ namespace Vend2000.Interfaces
     {
         public string Name { get; }
         public DispenserSize DispenserSize { get; }
+        public int Cost { get; }
     }
 }
+ 

@@ -11,7 +11,12 @@ namespace Vend2000
     public class Vend2000
     {
         private readonly ICoinValidator coinValidator;
-        private readonly IDispenser dispenser;
+        private readonly IDispenser dispenserA1;
+        private readonly IDispenser dispenserA2;
+        private readonly IDispenser dispenserA3;
+        private readonly IDispenser dispenserB1;
+        private readonly IDispenser dispenserB2;
+        private readonly IDispenser dispenserB3;
         private readonly ICoinStorage coinStorage;
 
         private string message = " ";
@@ -26,10 +31,16 @@ namespace Vend2000
 
         private const string EscapeKeyCode = "\u001b";
 
-        public Vend2000(ICoinValidator coinValidator, IDispenser dispenser, ICoinStorage coinStorage)
+        public Vend2000(ICoinValidator coinValidator,
+                        ICoinStorage coinStorage,
+                        IDispenser dispenserA1, 
+                        IDispenser dispenserA2,
+                        IDispenser dispenserA3)
         {
             this.coinValidator = coinValidator;
-            this.dispenser = dispenser;
+            this.dispenserA1 = dispenserA1;
+            this.dispenserA1 = dispenserA2;
+            this.dispenserA1 = dispenserA3;
             this.coinStorage = coinStorage;
         }   
 
@@ -98,11 +109,11 @@ namespace Vend2000
                     continue;
                 }
 
-                var gumPacket = dispenser.Dispense();
+                var gumPacket = dispenserA1.Dispense();
                 if (gumPacket is null)
                 {
                     LineFeed();
-                    BufferMessage("We apologize, we are currently out of Gum :(");
+                    BufferMessage("Sorry, dispenser is empty");
                     ReturnCoin();
                     continue;
                 }
@@ -168,7 +179,7 @@ namespace Vend2000
                 Heading("Maintenance Mode");
                 LineFeed();
 
-                Log($"Gum packets {dispenser.Quantity} of {dispenser.Capacity}");
+                Log($"Gum packets {dispenserA1.Quantity} of {dispenserA1.Capacity}");
                 Log($"Coin count {coinStorage.CoinCount}");
                 Separator();
                 LineFeed();
@@ -189,10 +200,10 @@ namespace Vend2000
                 switch (input)
                 {
                     case 1:
-                        dispenser.Add(new GumPacket());
+                        dispenserA1.Add(new GumPacket());
                         break;
                     case 2:
-                        dispenser.Dispense();
+                        dispenserA1.Dispense();
                         break;
                     case 3:
                         coinStorage.Empty();
@@ -258,7 +269,7 @@ namespace Vend2000
 
         private bool CheckForMissingModules()
         {
-            var modulesAreMissing = coinValidator == null || dispenser == null || coinStorage == null;
+            var modulesAreMissing = coinValidator == null || dispenserA1 == null || coinStorage == null;
             if (!modulesAreMissing)
             {
                 return false;
@@ -268,7 +279,7 @@ namespace Vend2000
             LineFeed();
 
             var coinValidatorMessage = coinValidator is null ? "*** Not installed *** (Program.cs Line 11)" : "Installed";
-            var gumDispenserMessage = dispenser is null ? "*** Not installed *** (Program.cs Line 12)" : "Installed";
+            var gumDispenserMessage = dispenserA1 is null ? "*** Not installed *** (Program.cs Line 12)" : "Installed";
             var coinStorageMessage = coinStorage is null ? "*** Not installed *** (Program.cs Line 13)" : "Installed";
             
             Log($"Coin Validator module : {coinValidatorMessage}");
